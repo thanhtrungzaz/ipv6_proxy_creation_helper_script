@@ -5,7 +5,7 @@ import ipaddress
 def generate_ipv6_addresses_random(prefix, count):
     prefix_network = ipaddress.IPv6Network(prefix)
     if prefix_network.prefixlen != 64:
-        raise ValueError("Префикс должен быть /64")
+        raise ValueError("Tiền tố phải là /64")
 
     addresses = set()
     while len(addresses) < count:
@@ -18,7 +18,7 @@ def generate_ipv6_addresses_random(prefix, count):
 def generate_ipv6_addresses_sequential(prefix, count):
     prefix_network = ipaddress.IPv6Network(prefix)
     if prefix_network.prefixlen != 64:
-        raise ValueError("Префикс должен быть /64")
+        raise ValueError("Tiền tố phải là /64")
 
     base_address = int(prefix_network.network_address)
     addresses = []
@@ -43,9 +43,9 @@ def generate_up_down_scripts(addresses, interface, home_directory):
             down_file.write(f"ip -6 addr del {address} dev {interface}\n")
 
 def main():
-    prefix = input("Введите первые 64 бита IPv6 префикса (например, 2001:0db8:85a3::/64): ")
-    count = int(input("Введите количество уникальных IPv6 адресов, которые нужно сгенерировать: "))
-    mode = input("Вы хотите использовать рандомизированную генерацию или последовательную (random/sequential)? ")
+    prefix = input("Nhập 64 bit đầu tiên của tiền tố IPv6 (ví dụ: 2001:0db8:85a3::/64): ")
+    count = int(input("Nhập số lượng địa chỉ IPv6 duy nhất sẽ được tạo: "))
+    mode = input("Bạn có muốn sử dụng tạo ngẫu nhiên hoặc tuần tự (ngẫu nhiên/tuần tự)? ")
 
     try:
         if mode.lower() == "random":
@@ -53,21 +53,21 @@ def main():
         elif mode.lower() == "sequential":
             addresses = generate_ipv6_addresses_sequential(prefix, count)
         else:
-            raise ValueError("Неизвестный режим генерации")
+            raise ValueError("Chế độ tạo không xác định")
 
         home_directory = os.path.expanduser("~")
         filename = os.path.join(home_directory, "ipv6.list")
         save_to_file(addresses, filename)
-        print(f"Список IPv6 адресов сохранен в файл: {filename}")
+        print(f"Danh sách địa chỉ IPv6 được lưu vào một tệp: {filename}")
 
-        generate_scripts = input("Вы хотите сгенерировать up и down скрипты для добавления/удаления IPv6 адресов на интерфейс (yes/no)? ").lower()
+        generate_scripts = input("Bạn muốn tạo các tập lệnh lên xuống để thêm/xóa địa chỉ IPv6 trên một giao diện (yes/no)? ").lower()
         if generate_scripts == "yes":
-            interface = input("Введите имя интерфейса (например, eth0): ")
+            interface = input("Nhập tên giao diện (ví dụ: eth0): ")
             generate_up_down_scripts(addresses, interface, home_directory)
-            print(f"Скрипты upipv6addr.sh и downipv6addr.sh сохранены в папку: {home_directory}")
+            print(f"Các tập lệnh upipv6addr.sh và downipv6addr.sh được lưu trong thư mục: {home_directory}")
 
     except ValueError as e:
-        print(f"Ошибка: {e}")
+        print(f"Lỗi: {e}")
 
 if __name__ == "__main__":
     main()
